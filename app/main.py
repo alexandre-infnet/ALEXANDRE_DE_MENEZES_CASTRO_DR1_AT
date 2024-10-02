@@ -33,14 +33,14 @@ with st.spinner("Carregando os dados da partida..."):
     events = load_match_events(match_id)
 st.success("Dados da partida carregados!")
 
-display_match_info(events, selected_match)
+display_match_info(events)
 
-plot_pass_map(events, selected_match)
-plot_shot_map(events, selected_match)
+plot_pass_map(events, selected_match, True)
+plot_shot_map(events, selected_match, True)
 plot_passes_vs_goals(events)
 plot_shots_distribution(events)
 plot_correlation(events)
-plot_pressure_map(events, selected_match)
+plot_pressure_map(events, selected_match, True)
 plot_shot_xg_map(events, selected_match)
 
 display_player_selection(events)

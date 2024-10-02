@@ -5,8 +5,12 @@ from mplsoccer import Pitch
 import pandas as pd
 
 
-def plot_pass_map(events, selected_match):
-    passes = events[events["type"] == "Pass"]
+def plot_pass_map(events, selected_player, match: bool):
+    if match is False:
+        passes = events[(events["type"] == "Pass") & (events["player"] == selected_player)]
+    else:
+        passes = events[events["type"] == "Pass"]
+
     pitch = Pitch(
         pitch_type="statsbomb", line_zorder=2, pitch_color="grass", line_color="white"
     )
@@ -27,12 +31,16 @@ def plot_pass_map(events, selected_match):
                 ax=ax,
             )
 
-    ax.set_title(f"Mapa de Passes: {selected_match}", fontsize=20)
+    ax.set_title(f"Mapa de Passes: {selected_player}", fontsize=20)
     st.pyplot(fig)
 
 
-def plot_shot_map(events, selected_match):
-    shots = events[events["type"] == "Shot"]
+def plot_shot_map(events, selected_player, match: bool):
+    if match is False:
+        shots = events[(events["type"] == "Shot") & (events["player"] == selected_player)]
+    else:
+        shots = events[events["type"] == "Shot"]
+
     pitch = Pitch(
         pitch_type="statsbomb", line_zorder=2, pitch_color="grass", line_color="white"
     )
@@ -45,7 +53,31 @@ def plot_shot_map(events, selected_match):
                 row["location"][0], row["location"][1], color=color, s=100, ax=ax
             )
 
-    ax.set_title(f"Mapa de Chutes: {selected_match}", fontsize=20)
+    ax.set_title(f"Mapa de Chutes: {selected_player}", fontsize=20)
+    st.pyplot(fig)
+
+
+def plot_pressure_map(events, selected_player, match):
+    if match is False:
+        pressure = events[(events["type"] == "Pressure") & (events["player"] == selected_player)]
+    else:
+        pressure = events[events["type"] == "Pressure"]
+
+    pitch = Pitch(
+        pitch_type="statsbomb", line_zorder=2, pitch_color="grass", line_color="white"
+    )
+    fig, ax = pitch.draw(figsize=(10, 7))
+
+    if not pressure.empty:
+        bin_statistic = pitch.bin_statistic(
+            pressure["location"].apply(lambda x: x[0]),
+            pressure["location"].apply(lambda x: x[1]),
+            statistic="count",
+            bins=(10, 10),
+        )
+        pitch.heatmap(bin_statistic, ax=ax, cmap="coolwarm", edgecolors="grey")
+
+    ax.set_title(f"Mapa de Pressão: {selected_player}", fontsize=20)
     st.pyplot(fig)
 
 
@@ -107,26 +139,6 @@ def plot_correlation(events):
     fig, ax = plt.subplots(figsize=(6, 4))
     sns.heatmap(stats_corr, annot=True, cmap="coolwarm", ax=ax)
     ax.set_title("Correlação entre Passes e Gols", fontsize=16)
-    st.pyplot(fig)
-
-
-def plot_pressure_map(events, selected_match):
-    pressure = events[events["type"] == "Pressure"]
-    pitch = Pitch(
-        pitch_type="statsbomb", line_zorder=2, pitch_color="grass", line_color="white"
-    )
-    fig, ax = pitch.draw(figsize=(10, 7))
-
-    if not pressure.empty:
-        bin_statistic = pitch.bin_statistic(
-            pressure["location"].apply(lambda x: x[0]),
-            pressure["location"].apply(lambda x: x[1]),
-            statistic="count",
-            bins=(10, 10),
-        )
-        pitch.heatmap(bin_statistic, ax=ax, cmap="coolwarm", edgecolors="grey")
-
-    ax.set_title(f"Mapa de Pressão: {selected_match}", fontsize=20)
     st.pyplot(fig)
 
 

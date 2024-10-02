@@ -3,7 +3,7 @@ from io import StringIO
 from visualizations import plot_pass_map, plot_shot_map, plot_pressure_map
 
 
-def display_match_info(events, selected_match):
+def display_match_info(events):
     goals = events[events["type"] == "Shot"][events["shot_outcome"] == "Goal"].shape[0]
     shots = events[events["type"] == "Shot"].shape[0]
     passes = events[events["type"] == "Pass"].shape[0]
@@ -20,13 +20,13 @@ def display_player_selection(events):
     selected_player = st.selectbox("Selecione um jogador", players)
 
     if st.button("Mostrar Mapa de Passes"):
-        plot_pass_map(events, selected_player)
+        plot_pass_map(events, selected_player, False)
 
     if st.button("Mostrar Mapa de Chutes"):
-        plot_shot_map(events, selected_player)
+        plot_shot_map(events, selected_player, False)
 
     if st.button("Mostrar Mapa de Pressão"):
-        plot_pressure_map(events, selected_player)
+        plot_pressure_map(events, selected_player, False)
 
 
 def display_event_form(events):
